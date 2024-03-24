@@ -1,5 +1,10 @@
-const fs = require("fs").promises;
-const path = require("path");
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obliczanie ścieżki __dirname w kontekście ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const contactsPath = path.join(__dirname, "contacts.json");
 
@@ -28,7 +33,7 @@ async function listContacts() {
 
 async function getContactById(contactId) {
   const contacts = await readContactsFile();
-  const contact = contacts.find((contact) => contact.id === contactId.toString());
+  const contact = contacts.find(contact => contact.id === contactId.toString());
   if (!contact) {
     console.log(`Nie znaleziono kontaktu o ID: ${contactId}`);
     return;
@@ -38,7 +43,7 @@ async function getContactById(contactId) {
 
 async function removeContact(contactId) {
   const contacts = await readContactsFile();
-  const filteredContacts = contacts.filter((contact) => contact.id !== contactId.toString());
+  const filteredContacts = contacts.filter(contact => contact.id !== contactId.toString());
   if (contacts.length === filteredContacts.length) {
     console.log(`Nie znaleziono kontaktu o ID: ${contactId} do usunięcia.`);
     return;
@@ -55,9 +60,4 @@ async function addContact(name, email, phone) {
   console.log(`Dodano kontakt: ${name}`);
 }
 
-module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-};
+export { listContacts, getContactById, removeContact, addContact };
