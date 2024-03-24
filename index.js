@@ -1,14 +1,14 @@
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
 const argv = yargs(hideBin(process.argv)).argv;
-const contactsOperations = require('./db/contacts');
+import { listContacts, getContactById, addContact, removeContact } from './db/contacts';
 
 yargs(hideBin(process.argv))
   .command({
     command: 'list',
     describe: 'List all contacts',
     handler: async () => {
-      const contacts = await contactsOperations.listContacts();
+      const contacts = await listContacts();
       console.table(contacts);
       console.log("Contacts table, enjoy!");
 
@@ -23,7 +23,7 @@ yargs(hideBin(process.argv))
       type: 'string',
     }),
     handler: async (argv) => {
-      const contact = await contactsOperations.getContactById(argv.id);
+      const contact = await getContactById(argv.id);
       console.log(contact);
     },
   })
@@ -35,7 +35,7 @@ yargs(hideBin(process.argv))
       .option('email', { describe: 'Contact email', demandOption: true, type: 'string' })
       .option('phone', { describe: 'Contact phone', demandOption: true, type: 'string' }),
     handler: async (argv) => {
-      await contactsOperations.addContact(argv.name, argv.email, argv.phone);
+      await addContact(argv.name, argv.email, argv.phone);
       console.log(`Added contact: ${argv.name}`);
     },
   })
@@ -48,7 +48,7 @@ yargs(hideBin(process.argv))
       type: 'string',
     }),
     handler: async (argv) => {
-      await contactsOperations.removeContact(argv.id);
+      await removeContact(argv.id);
       console.log(`Removed contact with ID: ${argv.id}`);
     },
   })
