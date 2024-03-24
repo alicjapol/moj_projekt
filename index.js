@@ -10,7 +10,7 @@ yargs(hideBin(process.argv))
     handler: async () => {
       const contacts = await contactsOperations.listContacts();
       console.table(contacts);
-      console.log("Contacts table, enjoy!"); // Dodano dla poprawy czytelności
+      console.log("Contacts table, enjoy!");
 
     },
   })
