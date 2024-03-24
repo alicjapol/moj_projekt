@@ -1,39 +1,55 @@
-const { Command } = require("commander");
-const program = new Command();
-const contactsOperations = require("./db/contacts");
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+const argv = yargs(hideBin(process.argv)).argv;
+const contactsOperations = require('./db/contacts');
 
-program.version("0.0.1").description("Contact management system");
-
-program
-  .command("list")
-  .description("List all contacts")
-  .action(async () => {
-    const contacts = await contactsOperations.listContacts();
-    console.log(contacts);
-  });
-
-program
-  .command("get <id>")
-  .description("Get a contact by id")
-  .action(async (id) => {
-    const contact = await contactsOperations.getContactById(id);
-    console.log(contact);
-  });
-
-program
-  .command("add <name> <email> <phone>")
-  .description("Add a new contact")
-  .action(async (name, email, phone) => {
-    await contactsOperations.addContact(name, email, phone);
-    console.log(`Added contact: ${name}`);
-  });
-
-program
-  .command("remove <id>")
-  .description("Remove a contact")
-  .action(async (id) => {
-    await contactsOperations.removeContact(id);
-    console.log(`Removed contact with ID: ${id}`);
-  });
-
-program.parse(process.argv);
+yargs(hideBin(process.argv))
+  .command({
+    command: 'list',
+    describe: 'List all contacts',
+    handler: async () => {
+      const contacts = await contactsOperations.listContacts();
+      console.table(contacts);
+    },
+  })
+  .command({
+    command: 'get',
+    describe: 'Get a contact by id',
+    builder: (yargs) => yargs.option('id', {
+      describe: 'Contact ID',
+      demandOption: true,
+      type: 'string',
+    }),
+    handler: async (argv) => {
+      const contact = await contactsOperations.getContactById(argv.id);
+      console.log(contact);
+    },
+  })
+  .command({
+    command: 'add',
+    describe: 'Add a new contact',
+    builder: (yargs) => yargs
+      .option('name', { describe: 'Contact name', demandOption: true, type: 'string' })
+      .option('email', { describe: 'Contact email', demandOption: true, type: 'string' })
+      .option('phone', { describe: 'Contact phone', demandOption: true, type: 'string' }),
+    handler: async (argv) => {
+      await contactsOperations.addContact(argv.name, argv.email, argv.phone);
+      console.log(`Added contact: ${argv.name}`);
+    },
+  })
+  .command({
+    command: 'remove',
+    describe: 'Remove a contact',
+    builder: (yargs) => yargs.option('id', {
+      describe: 'Contact ID',
+      demandOption: true,
+      type: 'string',
+    }),
+    handler: async (argv) => {
+      await contactsOperations.removeContact(argv.id);
+      console.log(`Removed contact with ID: ${argv.id}`);
+    },
+  })
+  .demandCommand(1, 'You must use one of the supported commands.')
+  .help()
+  .parse();
