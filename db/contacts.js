@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from 'nanoid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,7 +76,7 @@ async function addContact(name, email, phone) {
   try {
     const contacts = await readContactsFile();
     const newContact = {
-      id: uuidv4(),
+      id: nanoid(),
       name,
       email,
       phone,
